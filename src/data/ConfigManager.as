@@ -128,15 +128,15 @@ package data {
 
 		public static function getQiCiList(data:Object, type:String):void {//获取期次信息
 			var getBaseInfoUtil:LoadUtil = new LoadUtil();
-			getBaseInfoUtil.addEventListener("getQiCiList", MethodUtil.create(getQiCiResult, type));
+			getBaseInfoUtil.addEventListener("getQiCiList", MethodUtil.create(getQiCiResult, type, data));
 			getBaseInfoUtil.load("getQiCiList", "/Flash/GetIssueList", data, "get");
 		}
 
-		private static function getQiCiResult(e:TBZBEvent, type:String):void {//获取期次信息结果
+		private static function getQiCiResult(e:TBZBEvent, type:String, data:Object):void {//获取期次信息结果
 			e.target.removeEventListener("getQiCiList", getQiCiResult);
 			var o:Object = e.data as Object;
 			if (o.status == 1) {
-				TBZBNMain.getQiCiList(o.data.issuelist, type);
+				TBZBNMain.getQiCiList(o.data.issuelist, type, data);
 			}
 		}
 

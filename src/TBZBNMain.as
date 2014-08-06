@@ -9,7 +9,6 @@ package {
 	import UI.UIChooseNianJiPanelImpl;
 	import UI.UIChooseQiCiPanelImpl;
 
-	import com.greensock.TweenLite;
 	import com.greensock.plugins.GlowFilterPlugin;
 	import com.greensock.plugins.TransformAroundCenterPlugin;
 	import com.greensock.plugins.TweenPlugin;
@@ -301,9 +300,9 @@ package {
 		private static var chooseBanBenPanel:UIChooseBanBenPanelImpl;
 		private static var chooseQiCiPanel:UIChooseQiCiPanelImpl;
 
-		private static function alertChooseNianjiPanel():void {
+		private static function alertChooseNianjiPanel(nj:String = ""):void {
 			chooseNianJiPanel = new UIChooseNianJiPanelImpl();
-			chooseNianJiPanel.initBtns(ConfigManager.bookInfo, ConfigManager.banbielist);
+			chooseNianJiPanel.initBtns(ConfigManager.bookInfo, ConfigManager.banbielist, nj);
 			chooseNianJiPanel.addEventListener(UIEvent.UIChooseNianJiPanelEvent, onChoseNianJiPanelEventHandler);
 			LayerManager.showTip(chooseNianJiPanel);
 		}
@@ -311,56 +310,85 @@ package {
 		private static function onChoseNianJiPanelEventHandler(e:UIEvent):void {
 			switch (e.data.type) {
 				case "choose":
-					var njIndex:int = e.data.njIndex;
+					var njIndex:String = e.data.njIndex;
 					LayerManager.hideTip();
 					alertChooseKeMuPanel(njIndex);
+					break;
+				case "back":
+					LayerManager.hideTip();
 					break;
 			}
 		}
 
-		public static function alertChooseKeMuPanel(njIndex:int):void {
+		public static function alertChooseKeMuPanel(njIndex:String, km:String = ""):void {
 			chooseKeMuPanel = new UIChooseKeMuPanelImpl();
-			chooseKeMuPanel.initBtns(ConfigManager.bookInfo, njIndex);
+			chooseKeMuPanel.initBtns(ConfigManager.bookInfo, njIndex, km);
 			chooseKeMuPanel.addEventListener(UIEvent.UIChooseKeMuPanelEvent, onChoseKeMuPanelEventHandler);
 			LayerManager.showTip(chooseKeMuPanel);
 		}
 
 		private static function onChoseKeMuPanelEventHandler(e:UIEvent):void {
+			var njIndex:String = "";
 			switch (e.data.type) {
 				case "choose":
-					var njIndex:int = e.data.njIndex;
-					var kmIndex:int = e.data.kmIndex;
+					njIndex = e.data.njIndex;
+					var kmIndex:String = e.data.kmIndex;
 					LayerManager.hideTip();
 					alertChooseBanBenPanel(njIndex, kmIndex);
+					break;
+				case "back":
+					njIndex = e.data.njIndex;
+					LayerManager.hideTip();
+					alertChooseNianjiPanel(njIndex);
 					break;
 			}
 		}
 
-		private static function alertChooseBanBenPanel(njIndex:int, kmIndex:int):void {
+		private static function alertChooseBanBenPanel(njIndex:String, kmIndex:String, bb:String = ""):void {
 			chooseBanBenPanel = new UIChooseBanBenPanelImpl();
-			chooseBanBenPanel.initBtns(ConfigManager.bookInfo, njIndex, kmIndex);
+			chooseBanBenPanel.initBtns(ConfigManager.bookInfo, njIndex, kmIndex, bb);
 			chooseBanBenPanel.addEventListener(UIEvent.UIChooseBanBenPanelEvent, onChoseBanBenPanelEventHandler);
 			LayerManager.showTip(chooseBanBenPanel);
 		}
 
 		private static function onChoseBanBenPanelEventHandler(e:UIEvent):void {
+			var njIndex:String = "";
+			var kmIndex:String = "";
 			switch (e.data.type) {
 				case "choose":
-					var bbIndx:int = e.data.bbIndx;
-					var kmIndex:int = e.data.kmIndex;
-					var njIndex:int = e.data.njIndex;
+					var bbIndex:String = e.data.bbIndx;
+					njIndex = e.data.njIndex;
+					kmIndex = e.data.kmIndex;
 					LayerManager.hideTip();
-					ConfigManager.getQiCiList({gradeid: njIndex, subjectid: kmIndex, versionid: bbIndx}, "panel");
+					ConfigManager.getQiCiList({gradeid: njIndex, subjectid: kmIndex, versionid: bbIndex}, "panel");
 					chooseQiCiPanel = new UIChooseQiCiPanelImpl();
 					LayerManager.showTip(chooseQiCiPanel);
+					break;
+				case "back":
+					njIndex = e.data.njIndex;
+					kmIndex = e.data.kmIndex;
+					LayerManager.hideTip();
+					alertChooseKeMuPanel(njIndex, kmIndex);
 					break;
 			}
 		}
 
-		private static function alertChooseQiCiPanelList(issuelist:Object):void {
-			trace(issuelist);
-			chooseQiCiPanel.initBtns(ConfigManager.bookInfo, issuelist);
+		private static function alertChooseQiCiPanelList(issuelist:Object, data:Object):void {
+			chooseQiCiPanel.initBtns(ConfigManager.bookInfo, issuelist, data);
+			chooseQiCiPanel.addEventListener(UIEvent.UIChooseQiCiPanelEvent, onChoseQiCiPanelEventHandler);
 			chooseQiCiPanel.comboxOpen();
+		}
+
+		private static function onChoseQiCiPanelEventHandler(e:UIEvent):void {
+			switch (e.data.type) {
+				case "back":
+					var njIndex:String = e.data.njIndex;
+					var kmIndex:String = e.data.kmIndex;
+					var bbIndex:String = e.data.bbIndex;
+					LayerManager.hideTip();
+					alertChooseBanBenPanel(njIndex, kmIndex, bbIndex);
+					break;
+			}
 		}
 
 		private static function setFangDaSuoXiao(type:String):void {
@@ -656,11 +684,11 @@ package {
 			resizeHandler();
 		}
 
-		public static function getQiCiList(issuelist:Object, type:String):void {
+		public static function getQiCiList(issuelist:Object, type:String, data:Object):void {
 			if (type == "toolbar") {
-				toolBar.updateQiCiList(issuelist);
+				toolBar.updateQiCiList(issuelist, data);
 			} else if (type == "panel") {
-				alertChooseQiCiPanelList(issuelist);
+				alertChooseQiCiPanelList(issuelist, data);
 			}
 		}
 

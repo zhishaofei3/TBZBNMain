@@ -180,7 +180,7 @@ package UI {
 		}
 
 		//期次
-		public function updateQiCiList(issuelist:Object):void {
+		public function updateQiCiList(issuelist:Object, data:Object = null):void {
 			var bookInfo:BookInfo = ConfigManager.bookInfo;
 			var dp:DataProvider = new DataProvider();
 			for (var i:String in issuelist) {

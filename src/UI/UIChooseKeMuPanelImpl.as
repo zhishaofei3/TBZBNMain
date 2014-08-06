@@ -24,8 +24,8 @@ package UI {
 			addChild(uiChooseKeMuPanel);
 		}
 
-		public function initBtns(bookInfo:BookInfo, njIndex:int):void {
-			nianjiIndex = njIndex;
+		public function initBtns(bookInfo:BookInfo, njIndex:String, choose_km:String):void {
+			nianjiIndex = int(njIndex);
 			var kemuObj:Object = ConfigManager.banbielist[njIndex];
 			var i:int = 0;
 			var marginTop:int = 135;
@@ -37,16 +37,28 @@ package UI {
 				btn.addEventListener(MouseEvent.MOUSE_OUT, onMouseOutHandler);
 				btn.x = marginLeft + i % 4 * (btn.width + 30);
 				btn.y = marginTop + int(i / 4) * (btn.height + 30);
-				if (bookInfo.subject == index) {
+				var tt:String;
+				if (choose_km != "") {
+					tt = choose_km;
+				} else {
+					tt = bookInfo.subject;
+				}
+				if (tt == index) {
 					activeBtn = btn;
 					btn.gotoActive();
 				}
 				addChild(btn);
 				btn.alpha = 0;
-				TweenLite.to(btn, 0.3, {alpha: 1, delay: i * 0.1});
+				btn.y += 10;
+				TweenLite.to(btn, 0.3, {y:"-10", alpha: 1, delay: i * 0.1});
 				btns.push(btn);
 				i++;
 			}
+			uiChooseKeMuPanel.back_btn.addEventListener(MouseEvent.CLICK, onClickBackBtnEventHandler);
+		}
+
+		private function onClickBackBtnEventHandler(e:MouseEvent):void {
+			dispatchEvent(new UIEvent(UIEvent.UIChooseKeMuPanelEvent, {type: "back", njIndex: nianjiIndex}));
 		}
 
 		private function onClickHandler(e:MouseEvent):void {

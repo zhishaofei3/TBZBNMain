@@ -20,10 +20,15 @@ package UI {
 		public function UIChooseNianJiPanelImpl() {
 			btns = new Vector.<UIChooseBtnImpl>();
 			uiChooseNianJiPanel = new UIChooseNianJiPanel();
+			uiChooseNianJiPanel.back_btn.addEventListener(MouseEvent.CLICK, onClickBackBtnEventHandler);
 			addChild(uiChooseNianJiPanel);
 		}
 
-		public function initBtns(bookInfo:BookInfo, banbielist:Object):void {
+		private function onClickBackBtnEventHandler(e:MouseEvent):void {
+			dispatchEvent(new UIEvent(UIEvent.UIChooseNianJiPanelEvent, {type: "back"}));
+		}
+
+		public function initBtns(bookInfo:BookInfo, banbielist:Object, choose_nj:String = ""):void {
 			var i:int = 0;
 			var marginTop:int = 135;
 			var marginLeft:int = 70;
@@ -34,13 +39,20 @@ package UI {
 				btn.addEventListener(MouseEvent.MOUSE_OUT, onMouseOutHandler);
 				btn.x = marginLeft + i % 4 * (btn.width + 30);
 				btn.y = marginTop + int(i / 4) * (btn.height + 30);
-				if (bookInfo.grade == index) {
+				var tt:String;
+				if (choose_nj != "") {
+					tt = choose_nj;
+				} else {
+					tt = bookInfo.grade;
+				}
+				if (tt == index) {
 					activeBtn = btn;
 					btn.gotoActive();
 				}
 				addChild(btn);
 				btn.alpha = 0;
-				TweenLite.to(btn, 0.3, {alpha: 1, delay: i * 0.1});
+				btn.y += 10;
+				TweenLite.to(btn, 0.3, {y: "-10", alpha: 1, delay: i * 0.1});
 				btns.push(btn);
 				i++;
 			}

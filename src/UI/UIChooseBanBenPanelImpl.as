@@ -25,9 +25,9 @@ package UI {
 			addChild(uiChooseBanBenPanel);
 		}
 
-		public function initBtns(bookInfo:BookInfo, njIndex:int, kmIndex:int):void {
-			nianjiIndex = njIndex;
-			kemuIndex = kmIndex;
+		public function initBtns(bookInfo:BookInfo, njIndex:String, kmIndex:String, choose_bb:String):void {
+			nianjiIndex = int(njIndex);
+			kemuIndex = int(kmIndex);
 			var banbenObj:Object = ConfigManager.banbielist[njIndex][kmIndex];
 			var marginTop:int = 135;
 			var marginLeft:int = 70;
@@ -39,15 +39,27 @@ package UI {
 				btn.addEventListener(MouseEvent.MOUSE_OUT, onMouseOutHandler);
 				btn.x = marginLeft + i % 4 * (btn.width + 30);
 				btn.y = marginTop + int(i / 4) * (btn.height + 30);
-				if (bookInfo.version == banbenObj[i]) {
+				var tt:String;
+				if (choose_bb != "") {
+					tt = choose_bb;
+				} else {
+					tt = bookInfo.subject;
+				}
+				if (tt == banbenObj[i]) {
 					activeBtn = btn;
 					btn.gotoActive();
 				}
 				addChild(btn);
 				btn.alpha = 0;
-				TweenLite.to(btn, 0.3, {alpha: 1, delay: i * 0.1});
+				btn.y += 10;
+				TweenLite.to(btn, 0.3, {y: "-10", alpha: 1, delay: i * 0.1});
 				btns.push(btn);
 			}
+			uiChooseBanBenPanel.back_btn.addEventListener(MouseEvent.CLICK, onClickBackBtnEventHandler);
+		}
+
+		private function onClickBackBtnEventHandler(e:MouseEvent):void {
+			dispatchEvent(new UIEvent(UIEvent.UIChooseBanBenPanelEvent, {type: "back", njIndex: nianjiIndex, kmIndex: kemuIndex}));
 		}
 
 		private function onClickHandler(e:MouseEvent):void {

@@ -3,6 +3,8 @@ package UI {
 
 	import data.infos.BookInfo;
 
+	import events.UIEvent;
+
 	import fl.data.DataProvider;
 
 	import flash.events.Event;
@@ -16,6 +18,9 @@ package UI {
 
 	public class UIChooseQiCiPanelImpl extends AbstractDisplayObject {
 		private static var uiChooseQiciPanel:UIChooseQiCiPanel;
+		private static var nianjiIndex:String;
+		private static var kemuIndex:String;
+		private static var banbenIndex:String;
 
 		public function UIChooseQiCiPanelImpl() {
 			uiChooseQiciPanel = new UIChooseQiCiPanel();
@@ -23,7 +28,10 @@ package UI {
 			addChild(uiChooseQiciPanel);
 		}
 
-		public function initBtns(bookInfo:BookInfo, issuelist:Object):void {
+		public function initBtns(bookInfo:BookInfo, issuelist:Object, data:Object):void {
+			nianjiIndex = data.gradeid;
+			kemuIndex = data.subjectid;
+			banbenIndex = data.versionid;
 			var dp:DataProvider = new DataProvider();
 			for (var i:String in issuelist) {
 				var item:Object = issuelist[i];
@@ -46,6 +54,11 @@ package UI {
 			uiChooseQiciPanel.qici_combo.dropdown.rowHeight = 28;
 			uiChooseQiciPanel.tip.ok_btn.addEventListener(MouseEvent.CLICK, onClickOkBtnHandler);
 			TweenLite.to(uiChooseQiciPanel.tip, 0.6, {alpha: 1, y: "-20"});
+			uiChooseQiciPanel.back_btn.addEventListener(MouseEvent.CLICK, onClickBackBtnEventHandler);
+		}
+
+		private function onClickBackBtnEventHandler(e:MouseEvent):void {
+			dispatchEvent(new UIEvent(UIEvent.UIChooseQiCiPanelEvent, {type: "back", njIndex: nianjiIndex, kmIndex: kemuIndex, bbIndex: banbenIndex}));
 		}
 
 		private function labelFunction(item:Object):String {

@@ -1,4 +1,6 @@
 package UI {
+	import com.greensock.TweenLite;
+
 	import data.BookMode;
 	import data.ConfigManager;
 	import data.infos.BookInfo;
@@ -12,7 +14,6 @@ package UI {
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	import flash.text.TextFormat;
-	import flash.utils.setTimeout;
 
 	import tbzb.ui.CenterBtns;
 	import tbzb.ui.UITopToolbar;
@@ -33,6 +34,7 @@ package UI {
 			toolbar = new UITopToolbar();
 			addChild(toolbar);
 			btns = toolbar.centerBtns;
+			btns.genggaibanmian_btn.addEventListener(MouseEvent.CLICK, onClickGengGaiBanMianHandler);
 			btns.shuangye_btn.addEventListener(MouseEvent.CLICK, onShuangYeHandler);
 			btns.danye_btn.addEventListener(MouseEvent.CLICK, onDanYeHandler);
 			btns.fangda_btn.addEventListener(MouseEvent.CLICK, onFangDaHandler);
@@ -42,25 +44,15 @@ package UI {
 			btns.youfanye_btn.addEventListener(MouseEvent.CLICK, onYouFanYeHandler);
 			btns.quanping_btn.addEventListener(MouseEvent.CLICK, onQuanPingHandler);
 			btns.tuichuquanpnig_btn.addEventListener(MouseEvent.CLICK, onTuiChuQuanPingHandler);
-			btns.qishuTip_mc.visible = false;
+//			btns.qishuTip_mc.visible = false;
 			var tfm:TextFormat = new TextFormat();
 			tfm.font = "simsun";
 			tfm.size = 12;
-			btns.qishu.height = btns.nianji.height = btns.kemu.height = btns.banben.height = 24;
 
-			btns.qishu.focusEnabled = false;
-			btns.nianji.focusEnabled = false;
-			btns.kemu.focusEnabled = false;
-			btns.banben.focusEnabled = false;
-			btns.qishu.width = 115;
-			btns.nianji.setStyle("textFormat", tfm);
-			btns.nianji.dropdown.setRendererStyle("textFormat", tfm);
-			btns.kemu.setStyle("textFormat", tfm);
-			btns.kemu.dropdown.setRendererStyle("textFormat", tfm);
-			btns.banben.setStyle("textFormat", tfm);
-			btns.banben.dropdown.setRendererStyle("textFormat", tfm);
-			btns.qishu.setStyle("textFormat", tfm);
-			btns.qishu.dropdown.setRendererStyle("textFormat", tfm);
+			btns.qici_combo.width = 115;
+			btns.qici_combo.dropdown.rowHeight = 28;
+			btns.qici_combo.setStyle("textFormat", tfm);
+			btns.qici_combo.dropdown.setRendererStyle("textFormat", tfm);
 
 			huiToolBarContainer = new Sprite();
 			toolbar.addChild(huiToolBarContainer);
@@ -71,6 +63,10 @@ package UI {
 				toolbar.toolbarBg.width = stage.stageWidth;
 				toolbar.centerBtns.x = (stage.stageWidth - toolbar.centerBtns.width) / 2;
 			}
+		}
+
+		private function onClickGengGaiBanMianHandler(e:MouseEvent):void {
+			dispatchEvent(new UIEvent(UIEvent.ToolBarEvent, {type: "genggaibanmian"}));
 		}
 
 		private function onShuangYeHandler(e:MouseEvent):void {
@@ -93,6 +89,7 @@ package UI {
 			dispatchEvent(new UIEvent(UIEvent.ToolBarEvent, {type: "zuofanye"}));
 		}
 
+		//页码文本框
 		private function onYeMaHandler(e:MouseEvent):void {
 		}
 
@@ -182,8 +179,8 @@ package UI {
 			}
 		}
 
-		//期数
-		public function updateQiShuList(issuelist:Object, s:String):void {
+		//期次
+		public function updateQiCiList(issuelist:Object):void {
 			var bookInfo:BookInfo = ConfigManager.bookInfo;
 			var dp:DataProvider = new DataProvider();
 			for (var i:String in issuelist) {
@@ -191,17 +188,11 @@ package UI {
 				dp.addItem({year: item.year, num: item.num, data: i});
 			}
 			dp.sortOn(["year", "num"], Array.NUMERIC | Array.DESCENDING);
-			btns.qishu.dataProvider = dp;
-//			btns.qishu.prompt = bookInfo.year + "年第" + bookInfo.num + "期";
-			btns.qishu.labelFunction = issueLabelFunction;
-			btns.qishu.addEventListener(Event.CHANGE, onChangeQiShuHandler);
-
-			if (s == "show") {
-				btns.qishu.selectedIndex = 0;
-				showQiushiTip();
-			} else {
-				btns.qishu.prompt = bookInfo.year + "年第" + bookInfo.num + "期";
-			}
+			btns.qici_combo.dataProvider = dp;
+//			btns.qici_combo.prompt = bookInfo.year + "年第" + bookInfo.num + "期";
+			btns.qici_combo.labelFunction = issueLabelFunction;
+			btns.qici_combo.addEventListener(Event.CHANGE, onChangeQiShuHandler);
+			btns.qici_combo.prompt = bookInfo.year + "年第" + bookInfo.num + "期";
 		}
 
 		private function issueLabelFunction(item:Object):String {
@@ -209,172 +200,169 @@ package UI {
 		}
 
 		private function onChangeQiShuHandler(e:Event = null):void {
-//			var host:String = ExternalInterface.call("function(){return location.host;}");
-//			ExternalInterface.call("function(){window.location.href='http://" + host + "/swfEmbed?id=" + btns.qishu.selectedItem.data + "';}")
-			ExternalInterface.call("function(){window.location.href='/swfEmbed?id=" + btns.qishu.selectedItem.data + "';}")
+			ExternalInterface.call("function(){window.location.href='/swfEmbed?id=" + btns.qici_combo.selectedItem.data + "';}")
 		}
 
 		//年级
-		public function updateNianjiList():void {
-			var bookInfo:BookInfo = ConfigManager.bookInfo;
-			var banbielist:Object = ConfigManager.banbielist;
-			var dp:DataProvider = new DataProvider();
-			for (var i:String in banbielist) {
-				dp.addItem({index: i});
-			}
-			btns.nianji.dataProvider = dp;
-			for (var j:int = 0; j < dp.length; j++) {
-				if (dp.getItemAt(j).index == bookInfo.grade) {
-					btns.nianji.selectedIndex = j;
-					break;
-				}
-			}
-			btns.nianji.labelFunction = nianjiLabelFunction;
-			btns.nianji.addEventListener(Event.CHANGE, onChangeNianJiHandler);
-		}
+//		public function updateNianjiList():void {
+//			var bookInfo:BookInfo = ConfigManager.bookInfo;
+//			var banbielist:Object = ConfigManager.banbielist;
+//			var dp:DataProvider = new DataProvider();
+//			for (var i:String in banbielist) {
+//				dp.addItem({index: i});
+//			}
+//			btns.nianji.dataProvider = dp;
+//			for (var j:int = 0; j < dp.length; j++) {
+//				if (dp.getItemAt(j).index == bookInfo.grade) {
+//					btns.nianji.selectedIndex = j;
+//					break;
+//				}
+//			}
+//			btns.nianji.labelFunction = nianjiLabelFunction;
+//			btns.nianji.addEventListener(Event.CHANGE, onChangeNianJiHandler);
+//		}
+//
+//		private function nianjiLabelFunction(item:Object):String {
+//			return ConfigManager.baseInfo.grade[item.index];
+//		}
+//
+//		private function onChangeNianJiHandler(e:Event):void {
+//			updateKemuList();
+//			updateBanbenList();
+//			ConfigManager.getQiCiList();
+//		}
+//
+//		//科目 保留原来的
+//		public function updateKemuList():void {
+//			var bookInfo:BookInfo = ConfigManager.bookInfo;
+//			var banbielist:Object = ConfigManager.banbielist;
+//			var dp:DataProvider = new DataProvider();
+//			var nianjiSelectedItemIndex:String = btns.nianji.selectedItem.index;
+//			var kemuObj:Object = banbielist[nianjiSelectedItemIndex];
+//			for (var i:String in kemuObj) {
+//				dp.addItem({index: i});
+//			}
+//
+//			var oldObj:Object = btns.kemu.selectedItem;
+//			btns.kemu.dataProvider = dp;
+//			var j:int;
+//			if (!oldObj) { //如果第一次进入（没有选择）
+//				for (j = 0; j < dp.length; j++) {
+//					if (dp.getItemAt(j).index == bookInfo.subject) {
+//						btns.kemu.selectedIndex = j;
+//						break;
+//					}
+//				}
+//			} else { //如果上次选择了，并且有，就用上次的结果
+//				var isChoose:Boolean;
+//				for (j = 0; j < dp.length; j++) {
+//					if (dp.getItemAt(j).index == oldObj.index) {
+//						btns.kemu.selectedIndex = j;
+//						isChoose = true;
+//						break;
+//					}
+//				}
+//				if (!isChoose) {
+//					btns.kemu.selectedIndex = 0;
+//				}
+//			}
+//			btns.kemu.labelFunction = kemuLabelFunction;
+//			btns.kemu.addEventListener(Event.CHANGE, onChangeKeMuHandler);
+//		}
+//
+//		private function kemuLabelFunction(item:Object):String {
+//			return ConfigManager.baseInfo.subject[item.index];
+//		}
+//
+//		private function onChangeKeMuHandler(e:Event):void {
+//			updateBanbenList();
+//			ConfigManager.getQiCiList();
+//		}
+//
+//		public function updateBanbenList():void {
+//			var bookInfo:BookInfo = ConfigManager.bookInfo;
+//			var banbielist:Object = ConfigManager.banbielist;
+//			var dp:DataProvider = new DataProvider();
+//			var nianjiSelectedItemIndex:String = btns.nianji.selectedItem.index;
+//			var kemuSelectedItemIndex:String = btns.kemu.selectedItem.index;
+//			var banbenObj:Object = banbielist[nianjiSelectedItemIndex][kemuSelectedItemIndex];
+//			for (var s:String in banbenObj) {
+//				dp.addItem({index: banbenObj[s]});
+//			}
+//
+//			var oldObj:Object = btns.banben.selectedItem;
+//			btns.banben.dataProvider = dp;
+//			var j:int;
+//			if (!oldObj) { //如果第一次进入（没有选择）
+//				for (j = 0; j < dp.length; j++) {
+//					if (dp.getItemAt(j).index == bookInfo.version) {
+//						btns.banben.selectedIndex = j;
+//						break;
+//					}
+//				}
+//			} else { //如果上次选择了，并且有，就用上次的结果
+//				var isChoose:Boolean;
+//				for (j = 0; j < dp.length; j++) {
+//					if (dp.getItemAt(j).index == oldObj.index) {
+//						btns.banben.selectedIndex = j;
+//						isChoose = true;
+//						break;
+//					}
+//				}
+//				if (!isChoose) {
+//					btns.banben.selectedIndex = 0;
+//				}
+//			}
+//			btns.banben.labelFunction = banbenLabelFunction;
+//			btns.banben.addEventListener(Event.CHANGE, onChangeBanBenHandler);
+//		}
+//
+//		private function banbenLabelFunction(item:Object):String {
+//			return ConfigManager.baseInfo.version[item.index];
+//		}
+//
+//		private function onChangeBanBenHandler(e:Event):void {
+//			stage.focus = stage;
+//		}
 
-		private function nianjiLabelFunction(item:Object):String {
-			return ConfigManager.baseInfo.grade[item.index];
-		}
-
-		private function onChangeNianJiHandler(e:Event):void {
-			updateKemuList();
-			updateBanbenList();
-			ConfigManager.getQiCiList();
-		}
-
-		//科目 保留原来的
-		public function updateKemuList():void {
-			var bookInfo:BookInfo = ConfigManager.bookInfo;
-			var banbielist:Object = ConfigManager.banbielist;
-			var dp:DataProvider = new DataProvider();
-			var nianjiSelectedItemIndex:String = btns.nianji.selectedItem.index;
-			var kemuObj:Object = banbielist[nianjiSelectedItemIndex];
-			for (var i:String in kemuObj) {
-				dp.addItem({index: i});
-			}
-
-			var oldObj:Object = btns.kemu.selectedItem;
-			btns.kemu.dataProvider = dp;
-			var j:int;
-			if (!oldObj) { //如果第一次进入（没有选择）
-				for (j = 0; j < dp.length; j++) {
-					if (dp.getItemAt(j).index == bookInfo.subject) {
-						btns.kemu.selectedIndex = j;
-						break;
-					}
-				}
-			} else { //如果上次选择了，并且有，就用上次的结果
-				var isChoose:Boolean;
-				for (j = 0; j < dp.length; j++) {
-					if (dp.getItemAt(j).index == oldObj.index) {
-						btns.kemu.selectedIndex = j;
-						isChoose = true;
-						break;
-					}
-				}
-				if (!isChoose) {
-					btns.kemu.selectedIndex = 0;
-				}
-			}
-			btns.kemu.labelFunction = kemuLabelFunction;
-			btns.kemu.addEventListener(Event.CHANGE, onChangeKeMuHandler);
-		}
-
-		private function kemuLabelFunction(item:Object):String {
-			return ConfigManager.baseInfo.subject[item.index];
-		}
-
-		private function onChangeKeMuHandler(e:Event):void {
-			updateBanbenList();
-			ConfigManager.getQiCiList();
-		}
-
-		public function updateBanbenList():void {
-			var bookInfo:BookInfo = ConfigManager.bookInfo;
-			var banbielist:Object = ConfigManager.banbielist;
-			var dp:DataProvider = new DataProvider();
-			var nianjiSelectedItemIndex:String = btns.nianji.selectedItem.index;
-			var kemuSelectedItemIndex:String = btns.kemu.selectedItem.index;
-			var banbenObj:Object = banbielist[nianjiSelectedItemIndex][kemuSelectedItemIndex];
-			for (var s:String in banbenObj) {
-				dp.addItem({index: banbenObj[s]});
-			}
-
-			var oldObj:Object = btns.banben.selectedItem;
-			btns.banben.dataProvider = dp;
-			var j:int;
-			if (!oldObj) { //如果第一次进入（没有选择）
-				for (j = 0; j < dp.length; j++) {
-					if (dp.getItemAt(j).index == bookInfo.version) {
-						btns.banben.selectedIndex = j;
-						break;
-					}
-				}
-			} else { //如果上次选择了，并且有，就用上次的结果
-				var isChoose:Boolean;
-				for (j = 0; j < dp.length; j++) {
-					if (dp.getItemAt(j).index == oldObj.index) {
-						btns.banben.selectedIndex = j;
-						isChoose = true;
-						break;
-					}
-				}
-				if (!isChoose) {
-					btns.banben.selectedIndex = 0;
-				}
-			}
-			btns.banben.labelFunction = banbenLabelFunction;
-			btns.banben.addEventListener(Event.CHANGE, onChangeBanBenHandler);
-		}
-
-		private function banbenLabelFunction(item:Object):String {
-			return ConfigManager.baseInfo.version[item.index];
-		}
-
-		private function onChangeBanBenHandler(e:Event):void {
-			ConfigManager.getQiCiList("show");
-			stage.focus = stage;
-		}
-
-		public function showQiushiTip():void {
-			btns.qishu.open();
-			btns.qishu.addEventListener(Event.CLOSE, onQiShuCloseHandler);
-			btns.qishuTip_mc.visible = true;
-			btns.qishuTip_mc.ok_btn.addEventListener(MouseEvent.CLICK, onShowQishuOkBtnHandler);
-			TBZBNMain.huiQita(true);
-		}
-
-		private function onShowQishuOkBtnHandler(e:MouseEvent):void {
-			onChangeQiShuHandler();
-			btns.qishuTip_mc.ok_btn.removeEventListener(MouseEvent.CLICK, onShowQishuOkBtnHandler);
-			TBZBNMain.huiQita(false);
-		}
-
-		private function onQiShuCloseHandler(e:Event):void {
-			TBZBNMain.huiQita(false);
-			btns.qishu.removeEventListener(Event.CLOSE, onQiShuCloseHandler);
-			setTimeout(function ():void {
-				btns.qishuTip_mc.visible = false;
-				btns.qishuTip_mc.ok_btn.removeEventListener(MouseEvent.CLICK, onShowQishuOkBtnHandler);
-			}, 200);
-		}
-
-		public function getQianSanCombomBox():Object {
-			return {
-				gradeid: btns.nianji.selectedItem.index,
-				subjectid: btns.kemu.selectedItem.index,
-				versionid: btns.banben.selectedItem.index
-			}
-		}
+//		public function showQiushuTip():void {
+//			btns.qici_combo.open();
+//			btns.qici_combo.addEventListener(Event.CLOSE, onQiShuCloseHandler);
+//			btns.qishuTip_mc.visible = true;
+//			btns.qishuTip_mc.ok_btn.addEventListener(MouseEvent.CLICK, onShowQishuOkBtnHandler);
+//			TBZBNMain.huiQita(true);
+//		}
+//
+//		private function onShowQishuOkBtnHandler(e:MouseEvent):void {
+//			onChangeQiShuHandler();
+//			btns.qishuTip_mc.ok_btn.removeEventListener(MouseEvent.CLICK, onShowQishuOkBtnHandler);
+//			TBZBNMain.huiQita(false);
+//		}
+//
+//		private function onQiShuCloseHandler(e:Event):void {
+//			TBZBNMain.huiQita(false);
+//			btns.qici_combo.removeEventListener(Event.CLOSE, onQiShuCloseHandler);
+//			setTimeout(function ():void {
+//				btns.qishuTip_mc.visible = false;
+//				btns.qishuTip_mc.ok_btn.removeEventListener(MouseEvent.CLICK, onShowQishuOkBtnHandler);
+//			}, 200);
+//		}
 
 		public function hui(b:Boolean):void {
 			if (b) {
-				var sp:Sprite = DisObjUtil.getNoneInteractiveBG(toolbar.toolbarBg.width, toolbar.toolbarBg.height, 0.2);
-				huiToolBarContainer.addChild(sp);
+				if (huiToolBarContainer.numChildren == 0) {
+					var sp:Sprite = DisObjUtil.getNoneInteractiveBG(toolbar.toolbarBg.width, toolbar.toolbarBg.height, 0.2);
+					sp.name = "toolbarhui";
+					huiToolBarContainer.addChild(sp);
+				}
 			} else {
 				DisObjUtil.removeAllChildren(huiToolBarContainer);
 			}
+		}
+
+		public function initBookTxts():void {
+			var bInfo:BookInfo = ConfigManager.bookInfo;
+			btns.banmian_txt.text = ConfigManager.baseInfo.grade[bInfo.grade] + ConfigManager.baseInfo.subject[bInfo.subject] + " " + ConfigManager.baseInfo.version[bInfo.version];
 		}
 	}
 }

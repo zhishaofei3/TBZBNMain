@@ -5,10 +5,7 @@ package data {
 
 	import events.TBZBEvent;
 
-	import flash.display.Shape;
 	import flash.external.ExternalInterface;
-
-	import utils.common.util.AppUtil;
 
 	import utils.common.util.LoadUtil;
 	import utils.common.util.MethodUtil;
@@ -43,12 +40,6 @@ package data {
 		}
 
 		private static function jsLoggedin(userObj:Object):void {
-			var s:Shape = new Shape();
-			s.graphics.beginFill(0xFF0000);
-			s.graphics.drawRect(0, 0, 1, 1);
-			s.graphics.endFill();
-			TBZBNMain.st.addChild(s);
-
 			userInfo = new UserInfo();
 			userInfo.uid = userObj.uid;
 			userInfo.username = userObj.username;
@@ -131,24 +122,21 @@ package data {
 			var o:Object = e.data as Object;
 			if (o.status == 1) {
 				banbielist = o.data.banbielist;
-				TBZBNMain.updateNianjiList();
-				TBZBNMain.updateKemuList();
-				TBZBNMain.updateBanbenList();
-				getQiCiList();
+				getQiCiList({gradeid: bookInfo.grade, subjectid: bookInfo.subject, versionid: bookInfo.version}, "toolbar");
 			}
 		}
 
-		public static function getQiCiList(s:String = ""):void {//获取期次信息
+		public static function getQiCiList(data:Object, type:String):void {//获取期次信息
 			var getBaseInfoUtil:LoadUtil = new LoadUtil();
-			getBaseInfoUtil.addEventListener("getQiCiList", MethodUtil.create(getQiCiResult, s));
-			getBaseInfoUtil.load("getQiCiList", "/Flash/GetIssueList", TBZBNMain.getQianSanCombomBox(), "get");
+			getBaseInfoUtil.addEventListener("getQiCiList", MethodUtil.create(getQiCiResult, type));
+			getBaseInfoUtil.load("getQiCiList", "/Flash/GetIssueList", data, "get");
 		}
 
-		private static function getQiCiResult(e:TBZBEvent, s:String):void {//获取期次信息结果
+		private static function getQiCiResult(e:TBZBEvent, type:String):void {//获取期次信息结果
 			e.target.removeEventListener("getQiCiList", getQiCiResult);
 			var o:Object = e.data as Object;
 			if (o.status == 1) {
-				TBZBNMain.updateToolBarIssueList(o.data.issuelist, s);
+				TBZBNMain.getQiCiList(o.data.issuelist, type);
 			}
 		}
 

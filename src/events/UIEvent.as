@@ -7,6 +7,10 @@ package events {
 		public static const ToolBarEvent:String = "ToolBarEvent";
 		public static const SingleFlipEvent:String = "SingleFilpEvent";
 		public static const PageFilpClassEvent:String = "PageFilpClassEvent";
+		public static const UIChooseNianJiPanelEvent:String = "UIChooseNianJiPanelEvent";
+		public static const UIChooseKeMuPanelEvent:String = "UIChooseKeMuPanelEvent";
+		public static const UIChooseBanBenPanelEvent:String = "UIChooseBanBenPanelEvent";
+		public static const UIChooseQiCiPanelEvent:String = "UIChooseQiCiPanelEvent";
 		public function UIEvent(t:String, _data:Object = null, bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(t, bubbles, cancelable);
 			this.data = _data;

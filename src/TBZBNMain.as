@@ -4,6 +4,15 @@ package {
 	import UI.PageFlipClass;
 	import UI.SingleFlipClass;
 	import UI.ToolBar;
+	import UI.UIChooseBanBenPanelImpl;
+	import UI.UIChooseKeMuPanelImpl;
+	import UI.UIChooseNianJiPanelImpl;
+	import UI.UIChooseQiCiPanelImpl;
+
+	import com.greensock.TweenLite;
+	import com.greensock.plugins.GlowFilterPlugin;
+	import com.greensock.plugins.TransformAroundCenterPlugin;
+	import com.greensock.plugins.TweenPlugin;
 
 	import data.BookMode;
 	import data.ConfigManager;
@@ -23,6 +32,8 @@ package {
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	import flash.ui.Keyboard;
+
+	import scenes.LayerManager;
 
 	import tbzb.ui.LeftFanYeBtn;
 	import tbzb.ui.RightFanYeBtn;
@@ -66,11 +77,16 @@ package {
 		public function TBZBNMain() {
 			trace("12nihao");
 			st = stage;
+			TweenPlugin.activate([TransformAroundCenterPlugin, GlowFilterPlugin]);
 			stage.align = StageAlign.TOP_LEFT;
 			st.scaleMode = StageScaleMode.NO_SCALE;
 
 			_mode = BookMode.DOUBLE;
 			fangdaxishu = 1;
+
+			var allContainer:Sprite = new Sprite();
+			LayerManager.initView(allContainer);
+			addChild(allContainer);
 
 			ConfigManager.init();
 		}
@@ -80,7 +96,7 @@ package {
 			stage_height = st.stageHeight;
 
 			bg = new Bg();
-			st.addChild(bg);
+			LayerManager.bgContainer.addChild(bg);
 			bg.resize();
 
 			b_height = (stage_height - 50);
@@ -89,7 +105,7 @@ package {
 			book_container = new MovieClip();
 			book_container.x = (stage_width - 2 * b_width) / 2;
 			book_container.y = 50;
-			st.addChild(book_container);
+			LayerManager.doubleBookContainer.addChild(book_container);
 
 			sb_width = (stage_width - DANYEKONGBAI);
 			sb_height = sb_width / 0.66;
@@ -97,7 +113,7 @@ package {
 			single_book_container = new MovieClip();
 			single_book_container.x = (stage_width - sb_width) / 2;
 			single_book_container.y = 50;
-			st.addChild(single_book_container);
+			LayerManager.singleBookContainer.addChild(single_book_container);
 
 			//多页
 			mypageflip = new PageFlipClass();//翻页控件
@@ -122,45 +138,46 @@ package {
 			singleflip.addEventListener(UIEvent.SingleFlipEvent, onSingleFlipEventHandler);
 
 			st.focus = st;
-			st.addEventListener(Event.RESIZE, resizeHandler);//屏幕重定位
+			st.addEventListener(Event.FULLSCREEN, onFullScreenEvent);
+			st.addEventListener(Event.RESIZE, resizeHandler);
 			st.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDownHandler);
 			st.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheelHandler);
 
 			datiBtn = new UIDatiBtn();
 			datiBtn.addEventListener(MouseEvent.CLICK, onClickDatiHandler);
-			st.addChild(datiBtn);
+			LayerManager.btnsContainer.addChild(datiBtn);
 			datiBtn.x = book_container.x + book_container.width + 20;
 			datiBtn.y = 70;
 
 			zhoubaoBtn = new UIZhoubaoBtn();
 			zhoubaoBtn.addEventListener(MouseEvent.CLICK, onClickZhouBaoBtnHandler);
 			zhoubaoBtn.visible = false;
-			st.addChild(zhoubaoBtn);
+			LayerManager.btnsContainer.addChild(zhoubaoBtn);
 			zhoubaoBtn.x = book_container.x + book_container.width + 20;
 			zhoubaoBtn.y = 70;
 
 			daanBtn = new UIDaanBtn();
 			daanBtn.addEventListener(MouseEvent.CLICK, onClickDaanBtnHandler);
 			daanBtn.visible = false;
-			st.addChild(daanBtn);
+			LayerManager.btnsContainer.addChild(daanBtn);
 			daanBtn.x = book_container.x + book_container.width + 20;
 			daanBtn.y = 70;
 
 			leftFanYeBtn = new LeftFanYeBtn();
 			leftFanYeBtn.addEventListener(MouseEvent.CLICK, onClickLeftFanYeBtnHandler);
-			st.addChild(leftFanYeBtn);
+			LayerManager.btnsContainer.addChild(leftFanYeBtn);
 			rightFanYeBtn = new RightFanYeBtn();
 			rightFanYeBtn.addEventListener(MouseEvent.CLICK, onClickRightFanYeBtnHandler);
-			st.addChild(rightFanYeBtn);
+			LayerManager.btnsContainer.addChild(rightFanYeBtn);
 
 			huiContainer = new Sprite();
-			st.addChild(huiContainer);
-			st.addEventListener(Event.FULLSCREEN, onFullScreenEvent);
+			LayerManager.huiContainer.addChild(huiContainer);
 
 			toolBar = new ToolBar();
 			toolBar.addEventListener(UIEvent.ToolBarEvent, onToolBarEvent);
-			st.addChild(toolBar);
+			LayerManager.toolBarContainer.addChild(toolBar);
 			toolBar.resize();
+			toolBar.initBookTxts();
 			toolBar.setModeBtnMode(mode);
 			toolBar.setSuoXiaoBtnEnable(false);
 
@@ -267,9 +284,83 @@ package {
 				case "tuichuquanping":
 					tuichuquanping();
 					break;
+				case "genggaibanmian":
+					genggaibanmian();
+					break;
 				default :
 					break;
 			}
+		}
+
+		private static function genggaibanmian():void {
+			alertChooseNianjiPanel();
+		}
+
+		private static var chooseNianJiPanel:UIChooseNianJiPanelImpl;
+		private static var chooseKeMuPanel:UIChooseKeMuPanelImpl;
+		private static var chooseBanBenPanel:UIChooseBanBenPanelImpl;
+		private static var chooseQiCiPanel:UIChooseQiCiPanelImpl;
+
+		private static function alertChooseNianjiPanel():void {
+			chooseNianJiPanel = new UIChooseNianJiPanelImpl();
+			chooseNianJiPanel.initBtns(ConfigManager.bookInfo, ConfigManager.banbielist);
+			chooseNianJiPanel.addEventListener(UIEvent.UIChooseNianJiPanelEvent, onChoseNianJiPanelEventHandler);
+			LayerManager.showTip(chooseNianJiPanel);
+		}
+
+		private static function onChoseNianJiPanelEventHandler(e:UIEvent):void {
+			switch (e.data.type) {
+				case "choose":
+					var njIndex:int = e.data.njIndex;
+					LayerManager.hideTip();
+					alertChooseKeMuPanel(njIndex);
+					break;
+			}
+		}
+
+		public static function alertChooseKeMuPanel(njIndex:int):void {
+			chooseKeMuPanel = new UIChooseKeMuPanelImpl();
+			chooseKeMuPanel.initBtns(ConfigManager.bookInfo, njIndex);
+			chooseKeMuPanel.addEventListener(UIEvent.UIChooseKeMuPanelEvent, onChoseKeMuPanelEventHandler);
+			LayerManager.showTip(chooseKeMuPanel);
+		}
+
+		private static function onChoseKeMuPanelEventHandler(e:UIEvent):void {
+			switch (e.data.type) {
+				case "choose":
+					var njIndex:int = e.data.njIndex;
+					var kmIndex:int = e.data.kmIndex;
+					LayerManager.hideTip();
+					alertChooseBanBenPanel(njIndex, kmIndex);
+					break;
+			}
+		}
+
+		private static function alertChooseBanBenPanel(njIndex:int, kmIndex:int):void {
+			chooseBanBenPanel = new UIChooseBanBenPanelImpl();
+			chooseBanBenPanel.initBtns(ConfigManager.bookInfo, njIndex, kmIndex);
+			chooseBanBenPanel.addEventListener(UIEvent.UIChooseBanBenPanelEvent, onChoseBanBenPanelEventHandler);
+			LayerManager.showTip(chooseBanBenPanel);
+		}
+
+		private static function onChoseBanBenPanelEventHandler(e:UIEvent):void {
+			switch (e.data.type) {
+				case "choose":
+					var bbIndx:int = e.data.bbIndx;
+					var kmIndex:int = e.data.kmIndex;
+					var njIndex:int = e.data.njIndex;
+					LayerManager.hideTip();
+					ConfigManager.getQiCiList({gradeid: njIndex, subjectid: kmIndex, versionid: bbIndx}, "panel");
+					chooseQiCiPanel = new UIChooseQiCiPanelImpl();
+					LayerManager.showTip(chooseQiCiPanel);
+					break;
+			}
+		}
+
+		private static function alertChooseQiCiPanelList(issuelist:Object):void {
+			trace(issuelist);
+			chooseQiCiPanel.initBtns(ConfigManager.bookInfo, issuelist);
+			chooseQiCiPanel.comboxOpen();
 		}
 
 		private static function setFangDaSuoXiao(type:String):void {
@@ -368,7 +459,7 @@ package {
 					if (nowpage <= mypageflip.book_totalpage - 2) {
 						nowpage += 2;
 					}
-//					if (!ConfigManager.userInfo) {
+//					if (!ConfigManager.userInfo) {//没登录 只能看一半
 //						if (nowpage >= Math.ceil(mypageflip.book_totalpage / 2)) {
 //							nowpage -= 2;
 //							ExternalInterface.call("flashCallJs", {type: "yibanweidenglu"});
@@ -386,7 +477,7 @@ package {
 				} else {
 					if (nowpage <= mypageflip.book_totalpage - 2) {
 						nowpage++;
-//						if (!ConfigManager.userInfo) {
+//						if (!ConfigManager.userInfo) {//没登录 只能看一半
 //							if (nowpage >= Math.ceil(mypageflip.book_totalpage / 2)) {
 //								nowpage--;
 //								ExternalInterface.call("flashCallJs", {type: "yibanweidenglu"});
@@ -460,7 +551,6 @@ package {
 
 		//加载过程中调用的函数
 		private static function onLoading(pageMC:MovieClip, loadedPercent:Number):void {
-			//trace(pageMC.loadmc["pText"].text+" : "+loadedPercent);
 			pageMC.loadmc.pText.text = loadedPercent;
 		}
 
@@ -566,30 +656,21 @@ package {
 			resizeHandler();
 		}
 
-		public static function updateToolBarIssueList(issuelist:Object, s:String):void {
-			toolBar.updateQiShuList(issuelist, s);
-		}
-
-		public static function updateNianjiList():void {
-			toolBar.updateNianjiList();
-		}
-
-		public static function updateKemuList():void {
-			toolBar.updateKemuList();
-		}
-
-		public static function updateBanbenList():void {
-			toolBar.updateBanbenList();
-		}
-
-		public static function getQianSanCombomBox():Object {
-			return toolBar.getQianSanCombomBox();
+		public static function getQiCiList(issuelist:Object, type:String):void {
+			if (type == "toolbar") {
+				toolBar.updateQiCiList(issuelist);
+			} else if (type == "panel") {
+				alertChooseQiCiPanelList(issuelist);
+			}
 		}
 
 		public static function hui(b:Boolean):void {
 			if (b) {
-				var sp:Sprite = DisObjUtil.getNoneInteractiveBG(stage_width, stage_height, 0.5);
-				huiContainer.addChild(sp);
+				if (huiContainer.numChildren == 0) {
+					var sp:Sprite = DisObjUtil.getNoneInteractiveBG(stage_width, stage_height, 0.5);
+					sp.name = "stagehui";
+					huiContainer.addChild(sp);
+				}
 			} else {
 				DisObjUtil.removeAllChildren(huiContainer);
 			}
@@ -611,10 +692,6 @@ package {
 				daanBtn.visible = true;
 			}
 			setMode(BookMode.SINGLE, nowpage);
-		}
-
-		public static function huiQita(b:Boolean):void {
-			TBZBNMain.hui(b);
 		}
 	}
 }

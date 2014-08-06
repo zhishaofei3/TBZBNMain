@@ -1,57 +1,75 @@
 package scenes {
 
-	import core.PageContainer;
-
-	import utils.common.util.DisObjUtil;
+	import com.greensock.TweenLite;
 
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
 
-	/**
-	 * 图层管理器
-	 * Created by 同步周报阅读器.
-	 * User: zhishaofei
-	 * Date: 2014/5/13
-	 * Time: 12:30
-	 */
+	import utils.common.util.DisObjUtil;
+
 	public class LayerManager extends Sprite {
-		public static var bgContainer:Sprite;//背景层
-		public static var bookContainer:Sprite;//图书层
-		public static var pageContainer:Sprite;//单页层
-		public static var toolContainer:Sprite;//工具层
-		public static var tipWindowContainer:Sprite;//提示层
-		public static var testContainer:Sprite;//测试层
-		public static var mouseIconContainer:Sprite;//光标层
+		public static var bgContainer:Sprite;
+		public static var doubleBookContainer:Sprite;
+		public static var singleBookContainer:Sprite;
+		public static var toolBarContainer:Sprite;
+		public static var btnsContainer:Sprite;
+		public static var huiContainer:Sprite;
+		public static var tipContainer:Sprite;
+
+		public static var tipSprite:Sprite;
 
 		public function LayerManager() {
 		}
 
 		public static function initView(cont:Sprite):void {
 			bgContainer = new Sprite();
-			bgContainer.mouseEnabled = false;
-			bgContainer.mouseChildren = false;
-			bgContainer.graphics.beginFill(0xE8E8E8);
-			bgContainer.graphics.drawRect(0, 0, PageContainer.stageW, PageContainer.stageH);
-			bgContainer.graphics.endFill();
 			cont.addChild(bgContainer);
-			bookContainer = new Sprite();
-			cont.addChild(bookContainer);
-			pageContainer = new Sprite();
-			cont.addChild(pageContainer);
-			toolContainer = new Sprite();
-			cont.addChild(toolContainer);
-			tipWindowContainer = new Sprite();
-			cont.addChild(tipWindowContainer);
-			testContainer = new Sprite();
-			cont.addChild(testContainer);
-			mouseIconContainer = new Sprite();
-			mouseIconContainer.mouseEnabled = false;
-			mouseIconContainer.mouseChildren = false;
-			cont.addChild(mouseIconContainer);
+			doubleBookContainer = new Sprite();
+			cont.addChild(doubleBookContainer);
+			singleBookContainer = new Sprite();
+			cont.addChild(singleBookContainer);
+			btnsContainer = new Sprite();
+			cont.addChild(btnsContainer);
+			toolBarContainer = new Sprite();
+			cont.addChild(toolBarContainer);
+			huiContainer = new Sprite();
+			cont.addChild(huiContainer);
+			tipContainer = new Sprite();
+			cont.addChild(tipContainer);
 		}
 
 		public static function clearContainer(container:DisplayObjectContainer):void {
 			DisObjUtil.removeAllChildren(container);
+		}
+
+		public static function showTip(con:Sprite):void {
+			tipSprite = con;
+			tipContainer.addChild(con);
+//			con.scaleX = 0.5;
+//			con.scaleY = 0.5;
+//			TweenLite.to(con, 0.2, {transformAroundCenter: {scaleX: 1, scaleY: 1}});
+			TweenLite.to(con, 1, {alpha: 1, glowFilter:{color:0x91e600, alpha:1, blurX:10, blurY:10}});
+			DisObjUtil.toStageCenter(con);
+			TBZBNMain.hui(true);
+			TBZBNMain.huiToolBar(true);
+			TBZBNMain.st.addEventListener(MouseEvent.CLICK, onStageClickHandler);
+		}
+
+		private static function onStageClickHandler(e:MouseEvent):void {
+			var targetName:String = e.target.name;
+			if (targetName == "stagehui" || targetName == "toolbarhui") {
+				TBZBNMain.st.removeEventListener(MouseEvent.CLICK, onStageClickHandler);
+				hideTip();
+			}
+		}
+
+		public static function hideTip():void {
+			if (tipSprite && tipContainer.contains(tipSprite)) {
+				tipContainer.removeChild(tipSprite);
+			}
+			TBZBNMain.hui(false);
+			TBZBNMain.huiToolBar(false);
 		}
 	}
 }

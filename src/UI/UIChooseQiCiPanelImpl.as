@@ -53,7 +53,7 @@ package UI {
 			uiChooseQiciPanel.qici_combo.dropdown.setRendererStyle("textFormat", tfm);
 			uiChooseQiciPanel.qici_combo.dropdown.rowHeight = 28;
 			uiChooseQiciPanel.tip.ok_btn.addEventListener(MouseEvent.CLICK, onClickOkBtnHandler);
-			TweenLite.to(uiChooseQiciPanel.tip, 0.6, {alpha: 1, y: "-20"});
+			TweenLite.to(uiChooseQiciPanel.tip, 0.3, {alpha: 1, y: "-20"});
 			uiChooseQiciPanel.back_btn.addEventListener(MouseEvent.CLICK, onClickBackBtnEventHandler);
 		}
 

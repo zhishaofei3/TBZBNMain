@@ -52,7 +52,7 @@ package UI {
 				addChild(btn);
 				btn.alpha = 0;
 				btn.y += 10;
-				TweenLite.to(btn, 0.3, {y: "-10", alpha: 1, delay: i * 0.1});
+				TweenLite.to(btn, 0.1, {y: "-10", alpha: 1, delay: i * 0.05});
 				btns.push(btn);
 				i++;
 			}

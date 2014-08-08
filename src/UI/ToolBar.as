@@ -362,7 +362,7 @@ package UI {
 
 		public function initBookTxts():void {
 			var bInfo:BookInfo = ConfigManager.bookInfo;
-			btns.banmian_txt.text = ConfigManager.baseInfo.grade[bInfo.grade] + ConfigManager.baseInfo.subject[bInfo.subject] + " " + ConfigManager.baseInfo.version[bInfo.version];
+			btns.banmian_txt.text = "版面：" + ConfigManager.baseInfo.grade[bInfo.grade] + ConfigManager.baseInfo.subject[bInfo.subject] + " " + ConfigManager.baseInfo.version[bInfo.version];
 		}
 	}
 }

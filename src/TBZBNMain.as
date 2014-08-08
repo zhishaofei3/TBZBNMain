@@ -30,6 +30,7 @@ package {
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
+	import flash.system.Security;
 	import flash.ui.Keyboard;
 
 	import scenes.LayerManager;
@@ -79,6 +80,9 @@ package {
 			TweenPlugin.activate([TransformAroundCenterPlugin, GlowFilterPlugin]);
 			stage.align = StageAlign.TOP_LEFT;
 			st.scaleMode = StageScaleMode.NO_SCALE;
+
+			Security.allowDomain("*");
+			Security.allowInsecureDomain("*");
 
 			_mode = BookMode.DOUBLE;
 			fangdaxishu = 1;

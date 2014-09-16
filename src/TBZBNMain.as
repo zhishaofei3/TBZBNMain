@@ -75,7 +75,7 @@ package {
 		public static var lastAD:Boolean;
 
 		public function TBZBNMain() {
-			trace("123nihao");
+			trace("1234nihao");
 			st = stage;
 			TweenPlugin.activate([TransformAroundCenterPlugin, GlowFilterPlugin]);
 			stage.align = StageAlign.TOP_LEFT;

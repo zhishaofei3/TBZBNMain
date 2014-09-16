@@ -102,6 +102,7 @@ package data {
 				bookInfo.subject = paper.info.subject;//2
 				bookInfo.version = paper.info.version;//57
 				bookInfo.grade = paper.info.grade;//11
+				bookInfo.issuename = paper.info.issuename;
 				bookInfo.answer = new PageInfo(paper.answer.small, paper.answer.big);
 				for (var i:String in paper.list.big) {
 					bookInfo.pageInfoList.push(new PageInfo(paper.list.small[i], paper.list.big[i]));

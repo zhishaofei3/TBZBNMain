@@ -10,6 +10,7 @@ package data.infos {
 		private var _answer:PageInfo;
 		private var _id:String;
 		private var _issueid:String;
+		private var _issuename:String;
 
 		public function BookInfo() {
 			_pageInfoList = new Vector.<PageInfo>();
@@ -93,6 +94,14 @@ package data.infos {
 
 		public function set issueid(value:String):void {
 			_issueid = value;
+		}
+
+		public function get issuename():String {
+			return _issuename;
+		}
+
+		public function set issuename(value:String):void {
+			_issuename = value;
 		}
 	}
 }

@@ -49,7 +49,7 @@ package UI {
 			tfm.font = "simsun";
 			tfm.size = 12;
 
-			btns.qici_combo.width = 115;
+			btns.qici_combo.width = 160;
 			btns.qici_combo.dropdown.rowHeight = 28;
 			btns.qici_combo.setStyle("textFormat", tfm);
 			btns.qici_combo.dropdown.setRendererStyle("textFormat", tfm);
@@ -185,18 +185,17 @@ package UI {
 			var dp:DataProvider = new DataProvider();
 			for (var i:String in issuelist) {
 				var item:Object = issuelist[i];
-				dp.addItem({year: item.year, num: item.num, data: i});
+				dp.addItem({year: item.year, num: item.num, issuename:item.issuename, data: i});
 			}
 			dp.sortOn(["year", "num"], Array.NUMERIC | Array.DESCENDING);
 			btns.qici_combo.dataProvider = dp;
-//			btns.qici_combo.prompt = bookInfo.year + "年第" + bookInfo.num + "期";
 			btns.qici_combo.labelFunction = issueLabelFunction;
 			btns.qici_combo.addEventListener(Event.CHANGE, onChangeQiShuHandler);
-			btns.qici_combo.prompt = bookInfo.year + "年第" + bookInfo.num + "期";
+			btns.qici_combo.prompt = bookInfo.issuename;
 		}
 
 		private function issueLabelFunction(item:Object):String {
-			return item.year + "年第" + item.num + "期";
+			return item.issuename;
 		}
 
 		private function onChangeQiShuHandler(e:Event = null):void {

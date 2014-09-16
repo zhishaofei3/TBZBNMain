@@ -35,7 +35,7 @@ package UI {
 			var dp:DataProvider = new DataProvider();
 			for (var i:String in issuelist) {
 				var item:Object = issuelist[i];
-				dp.addItem({year: item.year, num: item.num, data: i});
+				dp.addItem({year: item.year, num: item.num, issuename:item.issuename, data: i});
 			}
 			dp.sortOn(["year", "num"], Array.NUMERIC | Array.DESCENDING);
 
@@ -51,6 +51,7 @@ package UI {
 			uiChooseQiciPanel.qici_combo.setStyle("textFormat", tfm);
 			uiChooseQiciPanel.qici_combo.dropdown.setRendererStyle("height", 200);
 			uiChooseQiciPanel.qici_combo.dropdown.setRendererStyle("textFormat", tfm);
+			uiChooseQiciPanel.qici_combo.width = 160;
 			uiChooseQiciPanel.qici_combo.dropdown.rowHeight = 28;
 			uiChooseQiciPanel.tip.ok_btn.addEventListener(MouseEvent.CLICK, onClickOkBtnHandler);
 			TweenLite.to(uiChooseQiciPanel.tip, 0.3, {alpha: 1, y: "-20"});
@@ -62,7 +63,7 @@ package UI {
 		}
 
 		private function labelFunction(item:Object):String {
-			return item.year + "年第" + item.num + "期";
+			return item.issuename;
 		}
 
 		private function onChangeQiShuHandler(e:Event):void {

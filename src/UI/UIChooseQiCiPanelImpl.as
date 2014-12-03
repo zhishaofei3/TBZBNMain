@@ -67,7 +67,8 @@ package UI {
 		}
 
 		private function onChangeQiShuHandler(e:Event):void {
-			ExternalInterface.call("function(){window.location.href='/swfEmbed?id=" + uiChooseQiciPanel.qici_combo.selectedItem.data + "';}")
+			ExternalInterface.call("flashCallJs", {type:"paperId", data:uiChooseQiciPanel.qici_combo.selectedItem.data});
+//			ExternalInterface.call("function(){window.location.href='/paper-" + uiChooseQiciPanel.qici_combo.selectedItem.data + ".html';}")
 		}
 
 		public function comboxOpen():void {
@@ -76,7 +77,8 @@ package UI {
 
 		private function onClickOkBtnHandler(e:MouseEvent):void {
 			uiChooseQiciPanel.qici_combo.selectedIndex = 0;
-			ExternalInterface.call("function(){window.location.href='/swfEmbed?id=" + uiChooseQiciPanel.qici_combo.selectedItem.data + "';}")
+			ExternalInterface.call("flashCallJs", {type:"paperId", data:uiChooseQiciPanel.qici_combo.selectedItem.data});
+//			ExternalInterface.call("function(){window.location.href='/paper-" + uiChooseQiciPanel.qici_combo.selectedItem.data + ".html';}")
 		}
 	}
 }

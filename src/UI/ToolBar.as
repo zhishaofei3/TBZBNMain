@@ -199,7 +199,8 @@ package UI {
 		}
 
 		private function onChangeQiShuHandler(e:Event = null):void {
-			ExternalInterface.call("function(){window.location.href='/swfEmbed?id=" + btns.qici_combo.selectedItem.data + "';}")
+			ExternalInterface.call("flashCallJs", {type:"paperId", data:btns.qici_combo.selectedItem.data});
+//			ExternalInterface.call("function(){window.location.href='/paper-" + btns.qici_combo.selectedItem.data + ".html';}")
 		}
 
 		//年级

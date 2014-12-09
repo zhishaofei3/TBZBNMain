@@ -725,5 +725,10 @@ package {
 			}
 			setMode(BookMode.SINGLE, nowpage);
 		}
+
+		public static function showDatiBtn():void {
+			datiBtn.visible = true;
+		}
+
 	}
 }

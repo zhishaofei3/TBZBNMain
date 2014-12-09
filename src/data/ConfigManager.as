@@ -26,8 +26,13 @@ package data {
 				ExternalInterface.addCallback("jsLoggedin", jsLoggedin);
 				ExternalInterface.addCallback("showAnswer", showAnswer);
 				ExternalInterface.addCallback("hui", huiAll);
+				ExternalInterface.addCallback("shouhui", shouHui);
 			}
 			initFlashVars();
+		}
+
+		private static function shouHui():void {
+			TBZBNMain.showDatiBtn();
 		}
 
 		private static function showAnswer(b:Boolean):void {
